@@ -50,11 +50,12 @@ jobs:
           security set-key-partition-list -S "apple-tool:,apple:,codesign:" -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
           # Verify certificate was imported correctly
-          security find-certificate -a -c "$APPLE_SIGNING_IDENTITY" $KEYCHAIN_PATH || exit 1
+          security find-identity -v -p codesigning $KEYCHAIN_PATH
 
-          # Make the certificate available to electron-builder
+          # Set environment variables
           echo "CSC_LINK=$RUNNER_TEMP/certificate.p12" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=$APPLE_CERTIFICATE_PASSWORD" >> $GITHUB_ENV
+          echo "CSC_NAME=$APPLE_SIGNING_IDENTITY" >> $GITHUB_ENV
 
       - name: build
         run: npm run build
